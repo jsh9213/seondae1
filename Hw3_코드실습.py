@@ -80,6 +80,14 @@ matrix = [
     [7, 8, 9]
 ]
 
+# 행렬 덧셈
+C = add_square_matrices(A, B)
+
+# 결과 출력
+print("A + B =")
+for row in C:
+    print(row)
+
 diagonal_sum = sum(matrix[i][i] for i in range(len(matrix)))
 
 print("대각합:", diagonal_sum)
