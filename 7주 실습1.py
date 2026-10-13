@@ -40,11 +40,11 @@ for col in range(n):
         
     # 3. 피벗 행을 피벗 값으로 나누어 피벗을 1로 만든다.
     pivot = M[col][col]
-    for c in range(n + 1):
-        M[col][c] /= pivot
-        
-    print(f"R{col + 1} ← (1 / ({pivot})) × R{col + 1}")
-    print_matrix(M)
+
+    if pivot != 1:
+        M[col] = [v / pivot for v in M[col]]
+        print(f"R{col + 1} ← R{col + 1} ÷ {pivot}")
+        print_matrix(M)
 
     # 4. 피벗 위와 아래의 원소를 모두 0으로 만든다.
     for r in range(n):
