@@ -1,40 +1,63 @@
-def print_matrix(M):
-    """계수 2열과 각 시스템의 상수항을 구분해 출력"""
+from fractions import Fraction
+
+
+def print_matrix(name, M):
+    """행렬을 보기 좋게 출력"""
+    print(name)
     for row in M:
-        print(
-            f"[{row[0]:>3} {row[1]:>3}"
-            f" | {row[2]:>3} | {row[3]:>3}]"
-        )
+        print("[" + " ".join(f"{str(v):>5}" for v in row) + "]")
     print()
 
-# 첫 번째 시스템: x1 + 2x2 = 2, 3x1 + 7x2 = 8
-# 두 번째 시스템: x1 + 2x2 = 1, 3x1 + 7x2 = 7
-# 
-# 열의 의미: [x1 계수, x2 계수, 첫 번째 우변, 두 번째 우변]
-M = [
-    [1, 2, 2, 1],
-    [3, 7, 8, 7],
+#주어진 행렬
+A = [
+    [ 1, 2, 1],
+    [ 2, 3, 3],
+    [-3, -10, 2],
 ]
 
-print("1. 초기 첨가행렬")
-print_matrix(M)
+n = len(A)
 
-# 두 번째 행에서 첫 번째 행의 3배를 뺀다.
-M[1] = [M[1][j] - 3 * M[0][j] for j in range(4)]
+#U는 A의 복사본에서 시작한다.
+#Fraction를 사용하여 정확한 계산을 수행한다.
+U = [[Fraction(v) for v in row] for row in A]
 
-print("2. R2 ← R2 - 3R1")
-print_matrix(M)
+#L은 단위행렬에서 시작한다.
+L = [
+    [Fraction(1 if i == j else 0) for j in range(n)]
+    for i in range(n)
+]
 
-# 첫 번째 행에서 두 번째 행의 2배를 뺀다.
-M[0] = [M[0][j] - 2 * M[1][j] for j in range(4)]
+print_matrix("초기 행렬 A", A)
 
-print("3. R1 ← R1 - 2R2")
-print_matrix(M)
+#가우스 소거법: 피벗 아래의 원소를 0으로 만든다.
+for k in range(n-1):
+    if U[k][k] == 0:
+        raise ValueError("피벗이 0입니다. 행 교환이 필요합니다.")
 
-# 왼쪽이 단위행렬이 되었으므로 오른쪽 각 열이 해이다.
-for system in range(2):
-    column = 2 + system
-    x1 = M[0][column]
-    x2 = M[1][column]
-    
-    print(f"시스템 ({system + 1})의 해: x1 = {x1}, x2 = {x2}")
+    for i in range(k+1, n):
+        #소거 배수 = 없앨 원소 / 피벗
+        multiplier = U[i][k] / U[k][k]
+
+        #L에 소거 배수를 저장
+        L[i][k] = multiplier
+
+        # R1 ← R1 - multiplier * R2
+        U[i] = [
+            U[i][j] - multiplier * U[k][j]
+            for j in range(n)
+        ]
+
+        print(f"R{i+1} ← R{i+1} - {multiplier} * R{k+1}")
+        print_matrix("현재 U", U)
+
+print_matrix("최종 상삼각행렬 U", U)
+print_matrix("최종 하삼각행렬 L", L)
+
+#행렬 곱 LU 계산
+LU = [
+    [sum(L[i][k] * U[k][j] for k in range(n)) for j in range(n)]
+    for i in range(n)
+]
+
+print_matrix("검산 : L x U", LU)
+print("LU = A 확인", LU == A)
