@@ -4,7 +4,7 @@ def print_matrix(M):
     """첨가행렬 출력"""
     for row in M:
         coefficients = " ".join(f"{str(v):>6}" for v in row[:-1])
-        print(f"[{coefficients} | {str(row[-1]):>6}]")
+        print(f"{coefficients} | {str(row[-1]):>6}")
     print()
 
 # 문제의 첨가행렬 : 마지막 열은 우변 상수
